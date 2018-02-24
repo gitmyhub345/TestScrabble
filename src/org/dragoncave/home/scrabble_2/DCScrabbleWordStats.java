@@ -52,4 +52,9 @@ public class DCScrabbleWordStats {
         
         return jObj;
     }
+    
+    @Override
+    public String toString(){
+        return this.word + " : "+this.wordValue;
+    }
 }

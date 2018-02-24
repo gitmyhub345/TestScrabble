@@ -46,6 +46,8 @@ public class DCScrabbleGame {
     private final int modeGame = 0;
     private int mode;
     
+    private List<String> loseATurnPlayer;
+    
     public DCScrabbleGame(){
         initRand();
         this.tileBag = new DCGenericTileBag();
@@ -61,6 +63,7 @@ public class DCScrabbleGame {
         this.isStarted = false;
         this.mode = 0;
         this.playerStats = new HashMap<>();
+        this.loseATurnPlayer = new ArrayList<String>();
         verifier = new DCScrabbleVerifier();
 //        this.playerNames.add(getAnotherRandomName());
     }
@@ -81,6 +84,7 @@ public class DCScrabbleGame {
         this.mode = 0;
         this.playerStats = new HashMap<>();
         this.playerStats.put(player, new ArrayList<>());
+        this.loseATurnPlayer = new ArrayList<String>();
         verifier = new DCScrabbleVerifier();
         initRand();
     }
@@ -208,11 +212,25 @@ public class DCScrabbleGame {
     }
     
     public int getNextPlayer(){
+        if(debug){
+            System.out.println("DCScrabbleGame: getNextPlayer()->");
+        }
+
         int nextPlayer = currentPlayer+1;
         
         if (nextPlayer > this.numPlayers)
             nextPlayer = 1;
-        
+        if(loseATurnPlayer.size()>0){
+            if (playerNames.get(nextPlayer-1).equals(loseATurnPlayer.get(0)))
+                nextPlayer++;
+                if(nextPlayer > this.numPlayers)
+                    nextPlayer = 1;
+            }
+
+        if(debug){
+            System.out.println("\t\tnextPlayer: "+nextPlayer);
+        }
+
         return nextPlayer;
     }
     
@@ -464,10 +482,24 @@ public class DCScrabbleGame {
             System.out.println("DCScrabbleGame: incrementNextPlayer()->");
         }
         currentPlayer++;
+        
         if (currentPlayer > (this.numPlayers )){
             currentPlayer = 1;
-//            currentPlayer = 0;
         }
+        
+        if(loseATurnPlayer.size() > 0 && getCurrentPlayerName().equals(loseATurnPlayer.get(0))){
+            loseATurnPlayer.remove(0);
+            currentPlayer++;
+            if (currentPlayer > (this.numPlayers )){
+                currentPlayer = 1;
+            }
+        }
+
+        
+        if(debug){
+            System.out.println("\t\tresults after incrementing player: "+currentPlayer);
+        }
+            
     }
     
     private void decrementNextPlayer(){
@@ -745,14 +777,17 @@ public class DCScrabbleGame {
         boolean verified = challengePlay();
         mode = modeGame;
         if(verified){
+            loseATurnPlayer.add(player);
             jsonResponse = acceptPlay();
+            String previousMessage = jsonResponse.getString("message");
+            jsonResponse.put("message", previousMessage + " "+player+" will lose a turn.");
         } else {
             board.removeTiles(play.getLastPlayedMap());
             play.removeLastPlayedTilesWords();
             jsonResponse = getNextSteps();
             jsonResponse.put("success",false);
             jsonResponse.put("challenged player name",getCurrentPlayerName());
-            jsonResponse.put("message","word(s) played are invalid, "+getCurrentPlayerName()+" should lose a turn");
+            jsonResponse.put("message","word(s) played are invalid, "+getCurrentPlayerName()+"'s tiles have been return to "+getCurrentPlayerName());
             jsonResponse.put("verified",false);
             incrementNextPlayer();
             
@@ -856,6 +891,9 @@ public class DCScrabbleGame {
                 System.out.println("\tadding play stats for new player "+currentPlayer+" with words: "+play.getPlayStats().toString());
             }
             playerStats.put(currentPlayer, play.getPlayStats());
+        }
+        if(debug){
+            System.out.println("\t\tfinished adding played stats");
         }
     }
     
