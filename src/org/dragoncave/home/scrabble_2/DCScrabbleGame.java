@@ -657,6 +657,10 @@ public class DCScrabbleGame {
                     break;
                 case "create game": // this scenario is handled outside of the game also
                     break;
+                case "challenge":
+                    responseObject.put("mode", modeGame);
+                    responseObject.put("message","last play has already been verified!");
+                    break;
                 default:
                     break;
             }
