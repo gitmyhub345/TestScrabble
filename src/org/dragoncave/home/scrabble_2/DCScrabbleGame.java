@@ -596,11 +596,11 @@ public class DCScrabbleGame {
                     /**
                      * The below section should be reserved for finalized play
                      */
-//                        int userRemainingTiles = jsonRequest.getInt("remaining");
-                        int userRemainingTiles = 1;
+                        int userRemainingTiles = jsonRequest.getInt("remaining");
                         System.out.println("user tiles remaining: "+userRemainingTiles);
                         if (userRemainingTiles == 0 && responseObject.getInt("tiles remaining") == 0){
                             endGame();
+                            play.getPlayStats().add(new DCScrabbleWordStats("bonus",50));
                             responseObject.put("players standings", totalPlayersStats());
                             responseObject.put("message",responseObject.getString("message")+"\nThis game is ended");
                             responseObject.put("winner",getWinner());
