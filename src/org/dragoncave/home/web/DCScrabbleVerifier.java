@@ -52,7 +52,7 @@ public class DCScrabbleVerifier {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             JSONObject jObj = new JSONObject();
             try{
-                HttpGet httpGet = new HttpGet("https://www.dictionaryapi.com/api/v1/references/collegiate/xml/"+word+"?key=6bc15733-393f-4267-a332-169089ea9eac");
+                HttpGet httpGet = new HttpGet("https://www.dictionaryapi.com/api/v1/references/collegiate/xml/"+word+"?key=yourkeyhere");
                 CloseableHttpResponse response = httpclient.execute(httpGet);
                 try{
     //                System.out.println("----------- GET Response status -----------\n"+response.getStatusLine());
