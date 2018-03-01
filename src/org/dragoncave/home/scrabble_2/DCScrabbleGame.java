@@ -941,4 +941,17 @@ public class DCScrabbleGame {
         return result;
     }
     
+    public boolean canStillJoin(){
+        if(debug){
+            System.out.println("DCScrabbleGame: canStillJoin()->");
+        }
+        boolean canJoin = false;
+        if (!isStarted && numPlayers < 4){
+            canJoin = true;
+        }
+        if(debug){
+            System.out.println("\t\tcanStillJoin: "+canJoin);
+        }
+        return canJoin;
+    }
 }
